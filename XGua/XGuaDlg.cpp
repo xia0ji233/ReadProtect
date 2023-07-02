@@ -23,7 +23,7 @@ void DebugPrint(const char* format, ...)
 	vsnprintf(buffer, sizeof(buffer), format, args);
 	va_end(args);
 
-	OutputDebugStringA(buffer);
+	OutputDebugStringA(buffer);//
 }
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
