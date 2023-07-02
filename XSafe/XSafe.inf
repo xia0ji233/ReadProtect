@@ -1,0 +1,86 @@
+;
+; XSafe.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=XSafe.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+XSafe_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+XSafe.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%XSafe.DeviceDesc%=XSafe_Device, Root\XSafe ; TODO: edit hw-id
+
+[XSafe_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+XSafe.sys
+
+;-------------- Service installation
+[XSafe_Device.NT.Services]
+AddService = XSafe,%SPSVCINST_ASSOCSERVICE%, XSafe_Service_Inst
+
+; -------------- XSafe driver install sections
+[XSafe_Service_Inst]
+DisplayName    = %XSafe.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\XSafe.sys
+
+;
+;--- XSafe_Device Coinstaller installation ------
+;
+
+[XSafe_Device.NT.CoInstallers]
+AddReg=XSafe_Device_CoInstaller_AddReg
+CopyFiles=XSafe_Device_CoInstaller_CopyFiles
+
+[XSafe_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[XSafe_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[XSafe_Device.NT.Wdf]
+KmdfService =  XSafe, XSafe_wdfsect
+[XSafe_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "XSafe Installation Disk"
+XSafe.DeviceDesc = "XSafe Device"
+XSafe.SVCDESC = "XSafe Service"
